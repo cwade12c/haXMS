@@ -1,0 +1,469 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<title>haXMS Documentation || 1.0.0b</title>
+
+<script type="text/javascript" src="js/shCore.js"></script>
+<script type="text/javascript" src="js/shBrushPhp.js"></script>
+<link href="css/shCore.css" rel="stylesheet" type="text/css" />
+<link href="css/shThemeRDark.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+	SyntaxHighlighter.all()
+</script
+</head>
+
+<body>
+<center><h2>haXMS Documentation || 1.0.0b</h2></center>
+<br />
+Welcome to the haXMS Documentation release for haXMS 1.0.0b (UserSys).
+<br />
+This documentation is covering the 1.0.0b release of the haXMS, which
+contains the <b>Login</b> module, <b>Register</b> module, and <b>News</b> module.
+<br /><br />
+These modules can be used in the future with the haXMS system (which will include future module
+releases), or, they can be used with your own site. This documentation will be covering configurables,
+includes, and classes.
+<br /><br />
+<b>Future releases</b> will be even more modular than now... more will be handled with database+JSON, less
+with hardcoding... more modules in future releases, official templates, and a fully eqipped ACP.
+<hr />
+<center><h2>Configurables</h2></center>
+Configurables can be found throughout the following files (* = required):<br />
+[*]<i>hx_config.php</i>
+<br />
+[ ]<i>sys/modules/register/classes/register.class.php</i>
+<br />
+[ ]<i>sys/modules/login/classes/login.class.php</i>
+<br />
+<br />
+
+<b><u>hx_config.php</u></b>
+<br />
+<pre class="brush: php">
+##<!-- Info -->##
+DEFINE("SITE","haXMS"); #Site title. -> haXMS default
+
+##<!-- Paths -->##
+DEFINE("PATH","sys"); #haXMS(Handler) Directory -> sys default
+DEFINE("HOME","http://localhost"); #Home Page -> localhost default
+DEFINE("AUTH","http://localhost/login.php"); #Login Page -> login.php default
+
+##<!-- Database -->##
+DEFINE("HOST","127.0.0.1:3306"); #Database Host -> localhost default
+DEFINE("DB"  ,"mysite"); #Database Name -> hxm_site default
+DEFINE("USER","root"); #Database User -> hxm_wade default
+DEFINE("PASS",""); #Database Pass -> hXm_!@l5 default
+
+##<!-- Settings -->##
+DEFINE("LISTEN",TRUE); #Turn on monitor mode? TRUE=On , FALSE=Off
+DEFINE("IDX","login"); #Default Module to load if monitor mode is enabled.
+DEFINE("PKEY","SIXTY_FOUR_CHARS_GOES_HERE"); #Register module password key
+
+##<!-- Third Party Modules -->##
+DEFINE("REC_PUB","6LdHvL8SAAAAABpu5QsY576T3dm80XkZ_FE3Lix7"); #reCAPTCHA Public Key
+</pre>
+<br />
+
+Firstly notice that we have commented the main idea on each line. You can remove these
+comments if you wish, but these are here for organization and to help you quickly identify
+definitions to edit if you ever need to in the future.
+<br />
+<br />
+
+<i>SITE</i><br />
+This is the title of your site. Not necessarily the domain, but the name that will be
+placed between &#60;title&#62; tags, &#60;meta&#62; descriptors, and possible future 
+places where the title of your site can best be placed at without you having to edit
+hundreds of files each time. If you include the 'hx_config.php' file anywhere, you can at
+anytime echo SITE to display your site title. 
+<br />
+<br />
+
+<i>PATH</i><br />
+This is the path where haXMS subdirs will be kept. This is important to define because
+PATH is used within the code of the class files constantly to define where things are located.
+The default is "sys", because, the subdirs (modules, lib) are located in this directory. If you
+rename the "sys" directory, you need to edit this line to what you have renamed "sys" to.
+<br />
+<br />
+
+<i>HOME</i><br />
+This is your site homepage. This is generally used for redirecting users to a safe location after
+a process. 
+<br />
+<br />
+
+<i>AUTH</i><br />
+This is the location of your login file. We have provided you with a "login.php" file, but this file
+is not required (unlike the entire sys directory and it's sub-directories). The LOGIN definition is
+generally used if a user is trying to view a page they do not have access to (for instance, a
+page that is only available to users who are logged in).
+<br />
+<br />
+
+<b>Note:</b><br />
+The login and registration system handles user information through a database (mySQL). In order to use
+either the registration or login class, you need to have a database setup.
+<br />
+<br />
+
+<i>HOST</i><br />
+This is the database host. The default is localhost, or, 127.0.0.1 - :3306 is the mySQL port.
+<br />
+<br />
+
+<i>DB</i><br />
+This is the name of your database. There is no "true" default because you need to create your database
+through some sort of administration - we can not do this for you. (See phpMyAdmin)
+<br />
+<br />
+
+<i>USER</i><br />
+When connecting to your DB, there must be authorized access (or else any person could connect to your
+database). This is the username that is setup with your database.
+<br />
+<br />
+
+<i>PASS</i><br />
+When connecting to your DB, there must be authorized access (or else any person could connect to your
+database). This is the password that is setup with your database.
+<br />
+<br />
+
+<i>LISTEN</i><br />
+If enabled, your index page will listen for $_GET parameter "act", which will in turn load the specified
+module for you. If no specified module is found, the default module will be loaded.
+<br />
+<br />
+
+<i>IDX</i><br />
+This is your default module to load. This only matters if LISTEN is set to true. The default module will
+be loaded on "index.php", or if the specified module to be handled does not exist.
+<br />
+<br />
+
+<i>PKEY</i><br />
+This is your site's global hardcoded password key which may be used by various modules for an additional
+layer of security. Blended together with a salt + password + hashed makes a bruteforce attack against
+a hash much more difficult to carry out. (PKEY should never be changed, and should be 64 characters minimum)
+<br />
+<br />
+
+<i>REC_PUB</i><br />
+This is a public key used with the third party module "reCAPTCHA". We have provided you with our own
+public key for your use, but if you wish to use your own public key, you can change this value. 
+<br />
+<br />
+
+<!--<i>GUSR</i><br />
+This boolean describes if a function will be used on each occurance the 'hx_config.php' file is included.
+If this value is set to 1 (on/true), this will get the username of the current user and will assign it to
+a variable called '$user'. You could then do anything with the $user variable, such as echo it or other
+by simply including 'hx_config.php' in any given page. This is turned off by default because this could 
+become resource intensive if you had a lot of users browsing at one time, or if a user decided they wanted
+to refresh a page constantly to keep sending SQL queries to slow down server speeds. This will be more
+secure in the future, but for now we recommend it is turned off unless you plan on using it with care.-->
+<br />
+<br />
+<br />
+
+<b><u>register.class.php</u></b>
+<br />
+<pre class="brush: php">
+$min_usr = 3;   #Minimum length of username
+$max_usr = 24;  #Maximum length of username
+$min_pwd = 6;   #Minimum length of password
+$max_pwd = 16;  #Maximum length of password
+$pass_type = 0; #0->MD5, 1->SHA1, 2->SHA256
+$register = 'register.php'; #Filename of page2register
+$param = 'r'; #Paramater for $_GET for redirect. e.g. ?r=
+$home = PATH . '/modules/register/templates/index.php'; #Path to index template
+$vali = PATH . '/modules/register/templates/validate.php'; #Path to validate template
+$subject = SITE . " Registration Confirmation"; #Email subject for validation.
+</pre>
+<br />
+
+Firstly notice that we have commented the main idea on each line. You can remove these
+comments if you wish, but these are here for organization and to help you quickly identify
+definitions to edit if you ever need to in the future.
+<br />
+<br />
+
+<i>$min_usr</i><br />
+It may be inconvenient to have users registering with 1 or 2 letter usernames. You can set
+'$min_usr' to the minimum amount of characters required to register with.
+<br />
+<br />
+
+<i>$max_usr</i><br />
+It may be inconvenient to have users registering with 2 sentence long usernames. You can set
+'$max_usr' to the maximum amount of characters a user can have their username be.
+<br />
+<br />
+
+<i>$min_pwd</i><br />
+It is important to protect your users from bruteforcing attacks. Having a decent password is
+always good. You can set '$min_pwd' to the minimum amount of characters required for a password.
+<br />
+<br />
+
+<i>$max_pwd</i><br />
+It is important to protect your users from bruteforcing attacks. Having a decent password is
+always good. Having one that is too long may become a problem in some cases. You can set '$max_pwd' 
+to the maximum amount of characters a user can have their password be.
+<br />
+<br />
+
+<i>$pass_type</i><br />
+We have given you the option to choose your hash type. Storing plaintext passwords in a database
+can be dangerous if your database is ever compromised. You can further protect your members by
+crypting their password with an algorithm. Three algorithm types are available: 1 for md5(), 2 for 
+sha1(), and 3 for sha256(). 1 is used on default.
+<br />
+<br />
+
+<i>$register</i><br />
+This is the location of your register file. We have provided you with a "register.php" file, but this file
+is not required (unlike the entire sys directory and it's sub-directories). The '$register' variable is used
+in redirecting a successfully registered user to the same page, but with the $_GET parameter to define the
+inclusion of the validation page. More flexibility will be available in the future. If you are renaming the
+provided register file, be sure to edit this variable with the new name. If you are using your own register
+file completely, see lines (118-123) in 'register.class.php'.
+<br />
+<br />
+
+<i>$param</i><br />
+This change of this variable is minimal to the finished product, but we wanted to provide as much customization
+as possible. This is the parameter used with your register file after the user has registered, to include the
+validation page. Default is 'r', so you will see: 'register.php?<b>r</b>=true' upon registration.
+<br />
+<br />
+
+<i>$home</i><br />
+This is the location of your registration page's template. Change this to wherever your template is located.
+We have provided a default example, in an organized structure.
+<br />
+<br />
+
+<i>$vali</i><br />
+This is the location of your validation page's template. Change this to wherever your template is located.
+We have provided a default example, in an organized structure.
+<br />
+<br />
+
+<i>$subject</i><br />
+This is the subject of the emails that are sent to the user for verification. Change this to best suit your
+greeting. 
+<br />
+<br />
+<br />
+
+<b><u>login.class.php</u></b>
+<br />
+<pre class="brush: php">
+$haxms = 1; #Are you using the haXMS registration system? 0->No, 1->Yes
+$home = PATH . '/modules/login/templates/index.php'; #Path to index template
+$cookie_prefix = 'hxm_'; #Unique prefix of our session.
+$time = 120; #How long until our cookies expire? (Minutes)
+</pre>
+<br />
+
+Firstly notice that we have commented the main idea on each line. You can remove these
+comments if you wish, but these are here for organization and to help you quickly identify
+definitions to edit if you ever need to in the future.
+<br />
+<br />
+
+<i>$haxms</i><br />
+This login system can be setup to work with your own project, or with the haXMS system. The haXMS system itself
+can be extremely flexible and can work with your own project as well, so we have given you the option to define
+if you are using the haXMS system. If you are, we will need to automatically detect which crypt() function the
+registration system is using so we can match it up with anything posted to log the user in. If you are not going
+to use the haXMS system (the registration module, in particular), then we will simply md5() the posted password on
+default. If you wish to edit md5() to another crypt function, or remove it entirely, see line (51) in 'login.class.php'
+
+<br />
+<br />
+
+<i>$home</i><br />
+This is the location of your login page's template. Change this to wherever your template is located.
+We have provided a default example, in an organized structure.
+<br />
+<br />
+
+<i>$cookie_prefix</i><br />
+Cookies are used to store (encrypted) login information to check if the user is logged in or not. 
+You can give your cookies unique names with a prefix.
+<br />
+<br />
+
+<i>$time</i><br />
+This is the value (in minutes) of when set cookies will expire. If this was set to 120 for instance, after 120 minutes, or,
+2 hours, the user's cookies would be destroyed. 
+<br />
+<br />
+<hr />
+
+<center><h2>Includes</h2></center>
+There are three main files that should be included upon using some of these modules. 
+<br />
+[*]hx_config.php
+<br />
+[*]sys/modules/register/classes/register.class.php
+<br />
+[*]sys/modules/login/classes/login.class.php
+<br />
+<br />
+There is one example file provided that can be used to make inclusions easier.
+<br />
+[ ]check.inc.php
+<br />
+<br />
+
+<b>hx_config.php</b>
+<br />
+<i>Include on pages where the database will be used, or where definitions SITE, PATH, etc. will be used. 
+This file is generally included on most pages.</i>
+<br />
+<br />
+
+<b>register.class.php</b>
+<br />
+<i>Include on your registration page. By doing so, you will have access to the classes within that file.</i>
+<br />
+<br />
+
+<b>login.class.php</b>
+<br />
+<i>Include on your login page. By doing so, you will have access to the classes within that file.</i>
+<br />
+<br />
+
+<b>check.inc.php</b>
+<br />
+<i>'check.inc.php' automatically includes 'hx_config.php', and 'login.class.php'. 'check.inc.php' will then make
+use of these files by using a method from the Login() class to check if the user is logged in or not. This 
+is an example file that is included, and will save you potentially 4 lines of code each time you wish to
+check to see if the user is logged in or not. Simply <b>require('check.inc.php');</b></i>
+<br />
+<br />
+<hr />
+
+<center><h2>Classes</h2></center>
+There are two main classes we are focusing on with this release: Login() and Register(). You can use these classes
+to create your own system to meet your own needs if you wish. You can do so with minimal lines of code.
+<br />
+<br />
+
+<b>Login()</b>
+<br />
+To gain access to this class, you must first include the classfile 'login.class.php'. Once you have done so, you have
+full access to the <i>Login()</i> class.
+<br />
+Start off by <b>creating your object</b>. Create a variable, and with the <b>new</b> keyword, assign the variable to the
+<i>Login()</i> class.
+<br />
+<pre class="brush: php">
+require('hx_config.php');
+require(PATH . '/modules/login/classes/login.class.php');
+
+$myvariable = new Login();
+</pre>
+
+Now we have our object '$myvariable'. We can now use the methods found within the <i>Login()</i> class by simply 
+using <b>$myvariable->method()</b>. Lets go over some methods.
+<br />
+<br />
+
+<b>$myvariable->doLogin($u,$p);</b>
+<br />
+This method will pass username,password off and will sanitize+hash accordingly, and will check them against the database.
+If the username and password match an entry, doLogin() will set 2 cookies and will return true. Using this method is
+as simple as this:
+<br />
+<pre class="brush: php">
+$islogin = $myvariable->doLogin($_POST['username'],$_POST['password']);
+//If $islogin is true...
+</pre>
+<br />
+
+<b>$myvariable->chkLogin();</b>
+<br />
+This method requires no parameters and will do all the work for you upon calling it. It will check if the user is
+logged in or not. If the user is not logged in, this method will redirect the user to AUTH (see earlier definitions). 
+If the user is logged in, chkLogin() will do nothing. 
+<br />
+<br />
+
+<b>$myvariable->setUser();</b>
+<br />
+This method requires no parameters and will do all the work for you upon calling it. This is an experimental method
+and is not fully supported as of this release. This method will attempt to get the username of the user by checking
+the cookies and comparing to database entries. If there is a result, it will return the result from a fetched array
+["username"]. Using this method is as simple as:
+<br />
+<pre class="brush: php">
+$user = $myvariable->setUser();
+//echo $user;
+</pre>
+<br />
+<br />
+
+<b>Register()</b>
+<br />
+To gain access to this class, you must first include the classfile 'register.class.php'. Once you have done so, you have
+full access to the <i>Register()</i> class.
+<br />
+Start off by <b>creating your object</b>. Create a variable, and with the <b>new</b> keyword, assign the variable to the
+<i>Register()</i> class.
+<br />
+<pre class="brush: php">
+require('hx_config.php');
+require(PATH . '/modules/register/classes/register.class.php');
+
+$myvariable = new Register();
+</pre>
+
+Now we have our object '$myvariable'. We can now use the methods found within the <i>Register()</i> class by simply 
+using <b>$myvariable->method()</b>. Lets go over some methods.
+<br />
+<br />
+
+<b>$myvariable->doRegister($e,$u,$p);</b>
+<br />
+This method will pass email,username,password off and will sanitize+hash accordingly, and will check them against the database.
+If the email and username do not already exist, and all password criteria is made, the values will be added
+to the database, and a verification key will be generated and sent to the user's email. Once the user validates this,
+the user will be able to login. Using this method is as simple as this:
+<br />
+<pre class="brush: php">
+$myvariable->doRegister($_POST['email'],$_POST['username'],$_POST['password']);
+</pre>
+<br />
+
+<b>$myvariable->doValidate($u,$v);</b>
+<br />
+This method will pass username,validationkey off and will sanitize accordingly, and will check them against the database.
+If the username and validation key match an existing entry in the database, this method will modify default table
+`group` value from '0' to '1', which will allow the user to login and use your site accordingly.
+Using this method is as simple as this:
+<br />
+<pre class="brush: php">
+$myvariable->doValidate($_POST['username'],$_POST['verification_key']);
+</pre>
+<br />
+<br />
+<hr />
+<center>
+<h2>A basic video demonstration of the UserSys can be found here:</h2>
+<a href="http://www.youtube.com/watch?v=4IlJzrhucSA" target="_blank">http://www.youtube.com/watch?v=4IlJzrhucSA</a>
+</center>
+<br />
+<center>
+<h2>http://haxme.org/</h2>
+<h2>[cwade12c]</h2>
+</center>
+</body>
+</html>
