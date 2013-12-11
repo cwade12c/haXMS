@@ -2,19 +2,6 @@
 
 //require_once('engine.php');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 require('hx_config.php');
 require(PATH . '/modules/login/classes/login.class.php');
 fetchtemplate();
